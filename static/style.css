@@ -1,0 +1,125 @@
+/* 
+ * Anime Recommendation App Custom Styles
+ * Combines your neon/dark theme with modern CSS.
+ * Plays nicely with Tailwind.
+ */
+
+/* -------------------------------------
+   Global styles
+------------------------------------- */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #212025; /* Dark background */
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* -------------------------------------
+   Container
+------------------------------------- */
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #222; /* Slightly lighter dark */
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* -------------------------------------
+   Typography
+------------------------------------- */
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #00ffcc; /* Neon cyan header */
+}
+
+/* -------------------------------------
+   Forms
+------------------------------------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 0.25rem;
+}
+
+select,
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #666;
+  color: #fff;
+  border-radius: 4px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="number"]:focus {
+  background-color: #444;
+  border-color: #00cc99;
+  outline: none;
+}
+
+/* Submit Button */
+input[type="submit"] {
+  background-color: #00cc99;
+  color: #000;
+  border: 1px solid #00b386;
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+  background-color: #00b386;
+}
+
+/* Hide user_id & anime_name input blocks by default */
+#user_id_input,
+#anime_id_input,
+#num_recommendations_input {
+  display: none;
+}
+
+/* -------------------------------------
+   Scrollbars
+------------------------------------- */
+/* For Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00cc99;
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #005472;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #00cc99 #fff;
+}
