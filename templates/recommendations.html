@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recommended Anime</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#212025] text-white min-h-screen p-6">
+
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-[#00CC99] mb-2">Recommended Anime</h1>
+      <a href="{{ url_for('home') }}"
+         class="text-gray-400 hover:underline hover:text-[#00CC99] underline-offset-4 text-sm">
+        &larr; Go back to Home
+      </a>
+    </div>
+
+    {% if recommendation_type == "user_based" %}
+      {% if animes is none or animes.empty %}
+        <p class="text-center text-xl">{{ message }}</p>
+      {% else %}
+        <div class="flex flex-wrap justify-center gap-6">
+          {% for anime in animes.iterrows() %}
+            <div class="bg-[#2A2D30] hover:bg-[#1e2022] rounded-xl shadow-lg overflow-hidden w-64 cursor-pointer relative group">
+              <img src="{{ anime[1]['anime_image_url'] }}"
+                   alt="{{ anime[1]['anime_name'] }}"
+                   class="w-full h-64 object-cover group-hover:brightness-50 transition duration-300"/>
+
+              <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4">
+                <h3 class="text-lg font-semibold truncate">{{ anime[1]['anime_name'] }}</h3>
+                <div class="flex text-xs mt-1 text-gray-300 gap-2">
+                  <span>{{ anime[1]['Type'] }}</span>
+                  <span class="w-1 h-1 bg-gray-400 rounded-full inline-block"></span>
+                  <span>{{ anime[1]['Aired'].split('-')[0] }}</span>
+                </div>
+              </div>
+
+              <div class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full font-semibold">
+                {{ anime[1]['n'] }}
+              </div>
+              <div class="absolute top-2 right-2 bg-[#7AFCFD] text-black text-xs px-2 py-1 rounded-full font-semibold">
+                {{ anime[1]['Rating'] }}
+              </div>
+
+              <div class="absolute inset-0 flex-col justify-center items-center text-center p-4 hidden group-hover:flex bg-[#4E515E]/90 backdrop-blur-md rounded-xl">
+                <h3 class="font-semibold text-lg mb-2">{{ anime[1]['anime_name'] }}</h3>
+                <p class="text-xs mb-2 h-20 overflow-y-scroll">{{ anime[1]['Synopsis'] }}</p>
+                <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-300 mb-2">
+                  <span>Aired: {{ anime[1]['Aired'] }}</span>
+                  <span>Status: {{ anime[1]['Status'] }}</span>
+                  <span>Genres: {{ anime[1]['Genres'] }}</span>
+                </div>
+                <a href="https://myanimelist.net/anime/{{anime[1]['anime_id']}}" target="_blank"
+                   class="inline-block bg-[#CAE962] hover:bg-[#a9c54e] text-black px-4 py-2 rounded-full text-sm font-bold">
+                  Watch Now
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% elif recommendation_type == "item_based" %}
+      {% if animes is none or animes.empty %}
+        <p class="text-center text-xl">{{ message or 'No recommendations found for this anime.' }}</p>
+      {% else %}
+        <div class="flex flex-wrap justify-center gap-6">
+          {% for anime in animes.iterrows() %}
+            <div class="bg-[#2A2D30] hover:bg-[#1e2022] rounded-xl shadow-lg overflow-hidden w-64 cursor-pointer relative group">
+              <img src="{{ anime[1]['anime_image_url'] }}"
+                   alt="{{ anime[1]['Name'] }}"
+                   class="w-full h-64 object-cover group-hover:brightness-50 transition duration-300"/>
+
+              <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4">
+                <h3 class="text-lg font-semibold truncate">{{ anime[1]['Name'] }}</h3>
+                <div class="flex text-xs mt-1 text-gray-300 gap-2">
+                  <span>{{ anime[1]['Type'] }}</span>
+                  <span class="w-1 h-1 bg-gray-400 rounded-full inline-block"></span>
+                  <span>{{ anime[1]['Aired'].split('-')[0] }}</span>
+                </div>
+              </div>
+
+              <div class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full font-semibold">
+                {{ anime[1]['Similarity'] }}
+              </div>
+              <div class="absolute top-2 right-2 bg-[#7AFCFD] text-black text-xs px-2 py-1 rounded-full font-semibold">
+                {{ anime[1]['Rating'] }}
+              </div>
+
+              <div class="absolute inset-0 flex-col justify-center items-center text-center p-4 hidden group-hover:flex bg-[#4E515E]/90 backdrop-blur-md rounded-xl">
+                <h3 class="font-semibold text-lg mb-2">{{ anime[1]['Name'] }}</h3>
+                <p class="text-xs mb-2 h-20 overflow-y-scroll">{{ anime[1]['Synopsis'] }}</p>
+                <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-300 mb-2">
+                  <span>Aired: {{ anime[1]['Aired'] }}</span>
+                  <span>Status: {{ anime[1]['Status'] }}</span>
+                  <span>Genres: {{ anime[1]['Genres'] }}</span>
+                </div>
+                <a href="https://myanimelist.net/anime/{{anime[1]['anime_id']}}" target="_blank"
+                   class="inline-block bg-[#CAE962] hover:bg-[#a9c54e] text-black px-4 py-2 rounded-full text-sm font-bold">
+                  Watch Now
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <div class="text-center mt-12">
+      <a href="{{ url_for('home') }}"
+         class="text-2xl text-[#00CC99] hover:underline underline-offset-8 active:underline">
+        &larr; Go back to Home
+      </a>
+    </div>
+  </div>
+</body>
+</html>

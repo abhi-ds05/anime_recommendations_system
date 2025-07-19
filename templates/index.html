@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anime Recommendation App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#212025] text-white min-h-screen flex flex-col items-center justify-start p-6">
+
+  <div class="max-w-xl w-full bg-[#222] border border-[#444] rounded-xl shadow-2xl p-8 space-y-6">
+    <h1 class="text-center text-4xl font-extrabold text-[#00ffcc] tracking-wide">Anime Recommendation</h1>
+
+    <form id="recommendForm" class="space-y-5">
+      <div>
+        <label class="block mb-2 font-semibold text-gray-300" for="recommendation_type">
+          Select Recommendation Type:
+        </label>
+        <select id="recommendation_type" name="recommendation_type" required
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]">
+          <option value="">-- Select --</option>
+          <option value="user_based">User-based</option>
+          <option value="item_based">Item-based</option>
+        </select>
+      </div>
+
+      <div id="user_id_input" class="hidden">
+        <label class="block mb-2 font-semibold text-gray-300" for="user_id">
+          Enter User ID:
+        </label>
+        <input type="text" id="user_id" name="user_id"
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
+      </div>
+
+      <div id="anime_name_input" class="hidden">
+        <label class="block mb-2 font-semibold text-gray-300" for="anime_name">
+          Enter Anime Name:
+        </label>
+        <input type="text" id="anime_name" name="anime_name" list="anime_list"
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
+        <datalist id="anime_list"></datalist>
+      </div>
+
+      <div id="num_recommendations_input" class="hidden">
+        <label class="block mb-2 font-semibold text-gray-300" for="num_recommendations">
+          Number of Recommendations:
+        </label>
+        <input type="number" id="num_recommendations" name="num_recommendations" value="10"
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
+      </div>
+
+      <button type="submit"
+        class="w-full mt-4 bg-[#00cc99] text-black font-bold py-3 rounded-lg hover:bg-[#00b386] transition duration-300 ease-in-out transform hover:scale-105">
+        Get Recommendations
+      </button>
+    </form>
+  </div>
+
+  <!-- Container for displaying recommendations -->
+  <div id="recommendations" class="mt-10 max-w-2xl w-full space-y-6"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Handle showing inputs
+    document.getElementById("recommendation_type").addEventListener("change", function () {
+      const userIdInput = document.getElementById("user_id_input");
+      const animeNameInput = document.getElementById("anime_name_input");
+      const numRecsInput = document.getElementById("num_recommendations_input");
+
+      if (this.value === "user_based") {
+        userIdInput.classList.remove("hidden");
+        animeNameInput.classList.add("hidden");
+        numRecsInput.classList.remove("hidden");
+      } else if (this.value === "item_based") {
+        userIdInput.classList.add("hidden");
+        animeNameInput.classList.remove("hidden");
+        numRecsInput.classList.remove("hidden");
+      } else {
+        userIdInput.classList.add("hidden");
+        animeNameInput.classList.add("hidden");
+        numRecsInput.classList.add("hidden");
+      }
+    });
+
+    // Autocomplete
+    $("#anime_name").on("input", function () {
+      const input = this.value.toLowerCase();
+      const dataList = document.getElementById("anime_list");
+      $.ajax({
+        url: `/autocomplete`,
+        data: { term: input },
+        dataType: "json",
+        success: function (data) {
+          dataList.innerHTML = "";
+          data.forEach(function (animeName) {
+            const option = document.createElement("option");
+            option.value = animeName;
+            dataList.appendChild(option);
+          });
+        }
+      });
+    });
+
+    // Handle form submit via AJAX
+    document.getElementById("recommendForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const recType = document.getElementById("recommendation_type").value;
+      const userId = document.getElementById("user_id").value;
+      const animeName = document.getElementById("anime_name").value;
+      const numRecs = document.getElementById("num_recommendations").value || 10;
+
+      let data = { recommendation_type: recType, num_recommendations: numRecs };
+      if (recType === "user_based") data.user_id = userId;
+      if (recType === "item_based") data.anime_name = animeName;
+
+      fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => showRecommendations(data))
+      .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("recommendations").innerHTML = `<p class="text-red-400 text-center">Failed to get recommendations.</p>`;
+      });
+    });
+
+    function showRecommendations(recs) {
+      const container = document.getElementById("recommendations");
+      if (!recs.length) {
+        container.innerHTML = `<p class="text-center text-gray-400">No recommendations found.</p>`;
+        return;
+      }
+      container.innerHTML = recs.map(rec => `
+        <div class="bg-[#2a2d30] rounded-lg p-5 shadow-xl flex flex-col sm:flex-row gap-4">
+          <img src="${rec.img}" alt="${rec.name}" class="w-32 h-48 object-cover rounded-lg">
+          <div>
+            <h2 class="text-2xl font-bold text-[#00ffcc]">${rec.name}</h2>
+            <p class="text-sm text-gray-400 mb-2">${rec.genres}</p>
+            <p class="mb-2"><strong>Score:</strong> ${rec.score} | <strong>Watched by:</strong> ${rec.users_watched ?? '-'}</p>
+            <p class="text-gray-300">${rec.synopsis.slice(0, 250)}...</p>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
