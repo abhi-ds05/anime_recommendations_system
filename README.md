@@ -23,11 +23,15 @@
 - [Bug / Feature Request](#bug--feature-request)
 - [Future scope of project](#future-scope)
 
+
 ## Demo 🎥
 
-Click the image below to watch the demo:
+https://github.com/abhi-ds05/anime-recommendation-system/assets/raw/main/resource/demo-video.mp4
 
-[![Watch Video](https://user-images.githubusercontent.com/126476034/230762397-756fafed-7caf-4811-af46-8a8888e6f14b.png)](https://github.com/abhi-ds05/anime-recommendation-system/assets/126476034/756fafed-7caf-4811-af46-8a8888e6f14b)
+Or click to watch below:
+
+<video src="resource/demo-video.mp4" controls autoplay loop width="100%"></video>
+
 
 Note: If the website link provided above is not working, it might mean that the deployment has been stopped or there are technical issues. We apologize for any inconvenience.
 
