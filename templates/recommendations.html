@@ -3,116 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Recommended Anime</title>
+  <title>Anime Recommendation App</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#212025] text-white min-h-screen p-6">
+<body class="bg-[#212025] text-white min-h-screen flex flex-col items-center justify-start p-6">
 
-  <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-[#00CC99] mb-2">Recommended Anime</h1>
-      <a href="{{ url_for('home') }}"
-         class="text-gray-400 hover:underline hover:text-[#00CC99] underline-offset-4 text-sm">
-        &larr; Go back to Home
-      </a>
-    </div>
+  <div class="max-w-xl w-full bg-[#222] border border-[#444] rounded-xl shadow-2xl p-8 space-y-6">
+    <h1 class="text-center text-4xl font-extrabold text-[#00ffcc] tracking-wide">Anime Recommendation</h1>
 
-    {% if recommendation_type == "user_based" %}
-      {% if animes is none or animes.empty %}
-        <p class="text-center text-xl">{{ message }}</p>
-      {% else %}
-        <div class="flex flex-wrap justify-center gap-6">
-          {% for anime in animes.iterrows() %}
-            <div class="bg-[#2A2D30] hover:bg-[#1e2022] rounded-xl shadow-lg overflow-hidden w-64 cursor-pointer relative group">
-              <img src="{{ anime[1]['anime_image_url'] }}"
-                   alt="{{ anime[1]['anime_name'] }}"
-                   class="w-full h-64 object-cover group-hover:brightness-50 transition duration-300"/>
+    <form id="recommendForm" class="space-y-5">
+      <div>
+        <label class="block mb-2 font-semibold text-gray-300" for="recommendation_type">
+          Select Recommendation Type:
+        </label>
+        <select id="recommendation_type" name="recommendation_type" required
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]">
+          <option value="">-- Select --</option>
+          <option value="item_based">Item-based</option>
+        </select>
+      </div>
 
-              <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4">
-                <h3 class="text-lg font-semibold truncate">{{ anime[1]['anime_name'] }}</h3>
-                <div class="flex text-xs mt-1 text-gray-300 gap-2">
-                  <span>{{ anime[1]['Type'] }}</span>
-                  <span class="w-1 h-1 bg-gray-400 rounded-full inline-block"></span>
-                  <span>{{ anime[1]['Aired'].split('-')[0] }}</span>
-                </div>
-              </div>
+      <div id="anime_name_input" class="hidden">
+        <label class="block mb-2 font-semibold text-gray-300" for="anime_name">
+          Enter Anime Name:
+        </label>
+        <input type="text" id="anime_name" name="anime_name" list="anime_list"
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
+        <datalist id="anime_list"></datalist>
+      </div>
 
-              <div class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full font-semibold">
-                {{ anime[1]['n'] }}
-              </div>
-              <div class="absolute top-2 right-2 bg-[#7AFCFD] text-black text-xs px-2 py-1 rounded-full font-semibold">
-                {{ anime[1]['Rating'] }}
-              </div>
+      <div id="num_recommendations_input" class="hidden">
+        <label class="block mb-2 font-semibold text-gray-300" for="num_recommendations">
+          Number of Recommendations:
+        </label>
+        <input type="number" id="num_recommendations" name="num_recommendations" value="10"
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
+      </div>
 
-              <div class="absolute inset-0 flex-col justify-center items-center text-center p-4 hidden group-hover:flex bg-[#4E515E]/90 backdrop-blur-md rounded-xl">
-                <h3 class="font-semibold text-lg mb-2">{{ anime[1]['anime_name'] }}</h3>
-                <p class="text-xs mb-2 h-20 overflow-y-scroll">{{ anime[1]['Synopsis'] }}</p>
-                <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-300 mb-2">
-                  <span>Aired: {{ anime[1]['Aired'] }}</span>
-                  <span>Status: {{ anime[1]['Status'] }}</span>
-                  <span>Genres: {{ anime[1]['Genres'] }}</span>
-                </div>
-                <a href="https://myanimelist.net/anime/{{anime[1]['anime_id']}}" target="_blank"
-                   class="inline-block bg-[#CAE962] hover:bg-[#a9c54e] text-black px-4 py-2 rounded-full text-sm font-bold">
-                  Watch Now
-                </a>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% elif recommendation_type == "item_based" %}
-      {% if animes is none or animes.empty %}
-        <p class="text-center text-xl">{{ message or 'No recommendations found for this anime.' }}</p>
-      {% else %}
-        <div class="flex flex-wrap justify-center gap-6">
-          {% for anime in animes.iterrows() %}
-            <div class="bg-[#2A2D30] hover:bg-[#1e2022] rounded-xl shadow-lg overflow-hidden w-64 cursor-pointer relative group">
-              <img src="{{ anime[1]['anime_image_url'] }}"
-                   alt="{{ anime[1]['Name'] }}"
-                   class="w-full h-64 object-cover group-hover:brightness-50 transition duration-300"/>
-
-              <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4">
-                <h3 class="text-lg font-semibold truncate">{{ anime[1]['Name'] }}</h3>
-                <div class="flex text-xs mt-1 text-gray-300 gap-2">
-                  <span>{{ anime[1]['Type'] }}</span>
-                  <span class="w-1 h-1 bg-gray-400 rounded-full inline-block"></span>
-                  <span>{{ anime[1]['Aired'].split('-')[0] }}</span>
-                </div>
-              </div>
-
-              <div class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full font-semibold">
-                {{ anime[1]['Similarity'] }}
-              </div>
-              <div class="absolute top-2 right-2 bg-[#7AFCFD] text-black text-xs px-2 py-1 rounded-full font-semibold">
-                {{ anime[1]['Rating'] }}
-              </div>
-
-              <div class="absolute inset-0 flex-col justify-center items-center text-center p-4 hidden group-hover:flex bg-[#4E515E]/90 backdrop-blur-md rounded-xl">
-                <h3 class="font-semibold text-lg mb-2">{{ anime[1]['Name'] }}</h3>
-                <p class="text-xs mb-2 h-20 overflow-y-scroll">{{ anime[1]['Synopsis'] }}</p>
-                <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-300 mb-2">
-                  <span>Aired: {{ anime[1]['Aired'] }}</span>
-                  <span>Status: {{ anime[1]['Status'] }}</span>
-                  <span>Genres: {{ anime[1]['Genres'] }}</span>
-                </div>
-                <a href="https://myanimelist.net/anime/{{anime[1]['anime_id']}}" target="_blank"
-                   class="inline-block bg-[#CAE962] hover:bg-[#a9c54e] text-black px-4 py-2 rounded-full text-sm font-bold">
-                  Watch Now
-                </a>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endif %}
-
-    <div class="text-center mt-12">
-      <a href="{{ url_for('home') }}"
-         class="text-2xl text-[#00CC99] hover:underline underline-offset-8 active:underline">
-        &larr; Go back to Home
-      </a>
-    </div>
+      <button type="submit"
+        class="w-full mt-4 bg-[#00cc99] text-black font-bold py-3 rounded-lg hover:bg-[#00b386] transition duration-300 ease-in-out transform hover:scale-105">
+        Get Recommendations
+      </button>
+    </form>
   </div>
+
+  <!-- Container for displaying recommendations -->
+  <div id="recommendations" class="mt-10 max-w-2xl w-full space-y-6"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Handle showing inputs
+    document.getElementById("recommendation_type").addEventListener("change", function () {
+      const animeNameInput = document.getElementById("anime_name_input");
+      const numRecsInput = document.getElementById("num_recommendations_input");
+
+      animeNameInput.classList.remove("hidden");
+      numRecsInput.classList.remove("hidden");
+    });
+
+    // Autocomplete
+    $("#anime_name").on("input", function () {
+      const input = this.value.toLowerCase();
+      const dataList = document.getElementById("anime_list");
+      $.ajax({
+        url: `/autocomplete`,
+        data: { term: input },
+        dataType: "json",
+        success: function (data) {
+          dataList.innerHTML = "";
+          data.forEach(function (animeName) {
+            const option = document.createElement("option");
+            option.value = animeName;
+            dataList.appendChild(option);
+          });
+        }
+      });
+    });
+
+    // Handle form submit via AJAX
+    document.getElementById("recommendForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const recType = document.getElementById("recommendation_type").value;
+      const animeName = document.getElementById("anime_name").value;
+      const numRecs = document.getElementById("num_recommendations").value || 10;
+
+      let data = { recommendation_type: recType, num_recommendations: numRecs };
+      data.anime_name = animeName;
+
+      fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => showRecommendations(data))
+      .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("recommendations").innerHTML = `<p class="text-red-400 text-center">Failed to get recommendations.</p>`;
+      });
+    });
+
+    function showRecommendations(recs) {
+      const container = document.getElementById("recommendations");
+      if (!recs.length) {
+        container.innerHTML = `<p class="text-center text-gray-400">No recommendations found.</p>`;
+        return;
+      }
+      container.innerHTML = recs.map(rec => `
+        <div class="bg-[#2a2d30] rounded-lg p-5 shadow-xl flex flex-col sm:flex-row gap-4">
+          <img src="${rec.img}" alt="${rec.name}" class="w-32 h-48 object-cover rounded-lg">
+          <div>
+            <h2 class="text-2xl font-bold text-[#00ffcc]">${rec.name}</h2>
+            <p class="text-sm text-gray-400 mb-2">${rec.genres}</p>
+            <p class="mb-2"><strong>Score:</strong> ${rec.score} | <strong>Watched by:</strong> ${rec.users_watched ?? '-'}</p>
+            <p class="text-gray-300">${rec.synopsis.slice(0, 250)}...</p>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
 </body>
 </html>

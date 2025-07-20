@@ -19,17 +19,8 @@
         <select id="recommendation_type" name="recommendation_type" required
           class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]">
           <option value="">-- Select --</option>
-          <option value="user_based">User-based</option>
           <option value="item_based">Item-based</option>
         </select>
-      </div>
-
-      <div id="user_id_input" class="hidden">
-        <label class="block mb-2 font-semibold text-gray-300" for="user_id">
-          Enter User ID:
-        </label>
-        <input type="text" id="user_id" name="user_id"
-          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
       </div>
 
       <div id="anime_name_input" class="hidden">
@@ -63,20 +54,13 @@
   <script>
     // Handle showing inputs
     document.getElementById("recommendation_type").addEventListener("change", function () {
-      const userIdInput = document.getElementById("user_id_input");
       const animeNameInput = document.getElementById("anime_name_input");
       const numRecsInput = document.getElementById("num_recommendations_input");
 
-      if (this.value === "user_based") {
-        userIdInput.classList.remove("hidden");
-        animeNameInput.classList.add("hidden");
-        numRecsInput.classList.remove("hidden");
-      } else if (this.value === "item_based") {
-        userIdInput.classList.add("hidden");
+      if (this.value === "item_based") {
         animeNameInput.classList.remove("hidden");
         numRecsInput.classList.remove("hidden");
       } else {
-        userIdInput.classList.add("hidden");
         animeNameInput.classList.add("hidden");
         numRecsInput.classList.add("hidden");
       }
@@ -105,12 +89,10 @@
     document.getElementById("recommendForm").addEventListener("submit", function (e) {
       e.preventDefault();
       const recType = document.getElementById("recommendation_type").value;
-      const userId = document.getElementById("user_id").value;
       const animeName = document.getElementById("anime_name").value;
       const numRecs = document.getElementById("num_recommendations").value || 10;
 
       let data = { recommendation_type: recType, num_recommendations: numRecs };
-      if (recType === "user_based") data.user_id = userId;
       if (recType === "item_based") data.anime_name = animeName;
 
       fetch("/api/recommend", {
