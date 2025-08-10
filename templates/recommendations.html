@@ -28,7 +28,7 @@
           Enter Anime Name:
         </label>
         <input type="text" id="anime_name" name="anime_name" list="anime_list"
-          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
+          class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" autocomplete="off"/>
         <datalist id="anime_list"></datalist>
       </div>
 
@@ -36,35 +36,41 @@
         <label class="block mb-2 font-semibold text-gray-300" for="num_recommendations">
           Number of Recommendations:
         </label>
-        <input type="number" id="num_recommendations" name="num_recommendations" value="10"
+        <input type="number" id="num_recommendations" name="num_recommendations" value="10" min="1" max="50"
           class="w-full rounded-lg px-4 py-2 bg-[#333] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00cc99]" />
       </div>
 
-      <button type="submit"
+      <button type="submit" id="submitBtn"
         class="w-full mt-4 bg-[#00cc99] text-black font-bold py-3 rounded-lg hover:bg-[#00b386] transition duration-300 ease-in-out transform hover:scale-105">
         Get Recommendations
       </button>
     </form>
   </div>
 
-  <!-- Container for displaying recommendations -->
+  <!-- Container for displaying loading message and recommendations -->
   <div id="recommendations" class="mt-10 max-w-2xl w-full space-y-6"></div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    // Handle showing inputs
+    // Show/hide inputs on selection
     document.getElementById("recommendation_type").addEventListener("change", function () {
-      const animeNameInput = document.getElementById("anime_name_input");
-      const numRecsInput = document.getElementById("num_recommendations_input");
-
-      animeNameInput.classList.remove("hidden");
-      numRecsInput.classList.remove("hidden");
+      if (this.value) {
+        document.getElementById("anime_name_input").classList.remove("hidden");
+        document.getElementById("num_recommendations_input").classList.remove("hidden");
+      } else {
+        document.getElementById("anime_name_input").classList.add("hidden");
+        document.getElementById("num_recommendations_input").classList.add("hidden");
+      }
     });
 
-    // Autocomplete
+    // Autocomplete anime names
     $("#anime_name").on("input", function () {
       const input = this.value.toLowerCase();
       const dataList = document.getElementById("anime_list");
+      if (input.length < 2) {
+        dataList.innerHTML = "";
+        return;
+      }
       $.ajax({
         url: `/autocomplete`,
         data: { term: input },
@@ -80,43 +86,85 @@
       });
     });
 
-    // Handle form submit via AJAX
+    // Disable submit button during fetch
+    function setLoading(loading) {
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = loading;
+      if (loading) {
+        btn.textContent = "Loading...";
+      } else {
+        btn.textContent = "Get Recommendations";
+      }
+    }
+
+    // Scroll to recommendations
+    function scrollToRecommendations() {
+      const container = document.getElementById('recommendations');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Handle form submit
     document.getElementById("recommendForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      const recType = document.getElementById("recommendation_type").value;
-      const animeName = document.getElementById("anime_name").value;
-      const numRecs = document.getElementById("num_recommendations").value || 10;
 
-      let data = { recommendation_type: recType, num_recommendations: numRecs };
-      data.anime_name = animeName;
+      const recType = document.getElementById("recommendation_type").value;
+      const animeName = document.getElementById("anime_name").value.trim();
+      const numRecs = +document.getElementById("num_recommendations").value || 10;
+
+      if (!recType) {
+        alert("Please select a recommendation type.");
+        return;
+      }
+      if (!animeName) {
+        alert("Please enter an anime name.");
+        return;
+      }
+      if (numRecs < 1 || numRecs > 50) {
+        alert("Number of recommendations must be between 1 and 50.");
+        return;
+      }
+
+      setLoading(true);
+      document.getElementById("recommendations").innerHTML = `<p class="text-center text-gray-400">Fetching recommendations...</p>`;
+
+      let data = { recommendation_type: recType, num_recommendations: numRecs, anime_name: animeName };
 
       fetch("/api/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       })
-      .then(response => response.json())
-      .then(data => showRecommendations(data))
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+      })
+      .then(data => {
+        showRecommendations(data);
+        scrollToRecommendations();
+      })
       .catch(err => {
         console.error("Error:", err);
         document.getElementById("recommendations").innerHTML = `<p class="text-red-400 text-center">Failed to get recommendations.</p>`;
-      });
+      })
+      .finally(() => setLoading(false));
     });
 
+    // Display recommendations, using rec.img (MyAnimeList/Cover URL)
     function showRecommendations(recs) {
       const container = document.getElementById("recommendations");
-      if (!recs.length) {
+      if (!recs || recs.length === 0) {
         container.innerHTML = `<p class="text-center text-gray-400">No recommendations found.</p>`;
         return;
       }
       container.innerHTML = recs.map(rec => `
-        <div class="bg-[#2a2d30] rounded-lg p-5 shadow-xl flex flex-col sm:flex-row gap-4">
-          <img src="${rec.img}" alt="${rec.name}" class="w-32 h-48 object-cover rounded-lg">
+        <div class="bg-[#2a2d30] rounded-lg p-5 shadow-xl flex flex-col sm:flex-row gap-4 hover:shadow-[#00ffcc] hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+          <img src="${rec.img}" alt="${rec.name}" class="w-32 h-48 object-cover rounded-lg flex-shrink-0"
+            onerror="this.onerror=null; this.src='/static/images/placeholder.png';" />
           <div>
             <h2 class="text-2xl font-bold text-[#00ffcc]">${rec.name}</h2>
-            <p class="text-sm text-gray-400 mb-2">${rec.genres}</p>
-            <p class="mb-2"><strong>Score:</strong> ${rec.score} | <strong>Watched by:</strong> ${rec.users_watched ?? '-'}</p>
-            <p class="text-gray-300">${rec.synopsis.slice(0, 250)}...</p>
+            <p class="text-sm text-gray-400 mb-2">${rec.genres || '-'}</p>
+            <p class="mb-2"><strong>Score:</strong> ${rec.score ?? '-'}</p>
+            <p class="text-gray-300">${(rec.synopsis || '').slice(0, 250)}${(rec.synopsis && rec.synopsis.length > 250 ? '...' : '')}</p>
           </div>
         </div>
       `).join('');
