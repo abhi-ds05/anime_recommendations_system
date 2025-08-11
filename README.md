@@ -26,17 +26,14 @@
 
 ## Demo 🎥
 
-https://github.com/abhi-ds05/anime-recommendation-system/assets/raw/main/resource/demo-video.mp4
-
-Or click to watch below:
-
-<video src="resource/demo-video.mp4" controls autoplay loop width="100%"></video>
 
 
-Note: If the website link provided above is not working, it might mean that the deployment has been stopped or there are technical issues. We apologize for any inconvenience.
+
+https://github.com/user-attachments/assets/03e55ce4-a9e1-468a-afe9-f4c8553cbf65
+
+
 
 - Please consider giving a ⭐ to the repository if you find this app useful.
-- A quick preview of my anime recommendation system.
 
 ## Overview 🌟📚
 
@@ -155,17 +152,3 @@ If you prefer, you can also create a virtual environment to manage the project d
 
 If you encounter any bugs or issues with the anime recommendation app, please let me know by opening an issue on my [GitHub repository](https://github.com/abhi-ds05/anime_recommendations_system/issues). Be sure to include the details of your query and the expected results. Your feedback is valuable in helping me improve the app for all users. Thank you for your support!
 
-## Future Scope
-
-1. **Implement Hybrid Recommendation System**: Combine collaborative filtering and content-based filtering techniques to create a hybrid recommendation system.
-2. **Include User Feedback and Reviews**: Incorporate user feedback and reviews into the recommendation system to improve the accuracy of recommendations.
-3. **Explore Deep Learning Models**: Experiment with advanced deep learning models, such as RNNs and transformer-based architectures, to enhance recommendation performance.
-4. **Real-Time Recommendation Updates**: Implement a real-time recommendation system that continuously updates suggestions based on users' interactions.
-5. **Integrate External Data Sources**: Consider integrating external data sources, such as user demographics and anime-related news, to personalize recommendations.
-6. **Anime Sentiment Analysis**: Perform sentiment analysis on anime reviews to gauge audience sentiments towards specific animes.
-7. **User Clustering**: Cluster users based on preferences to provide better personalized recommendations and targeted marketing strategies.
-8. **Interactive Web Interface**: Develop a user-friendly web interface for exploring recommendations and detailed anime information.
-9. **Social Media Integration**: Allow users to share favorite animes and recommendations on social media platforms.
-10. **Anime Popularity Trend Analysis**: Conduct time series analysis to identify trends in anime popularity over different seasons and years.
-11. **Personalized Watchlists**: Create personalized watchlists for users, curating a list of animes based on their preferences.
-12. **Sentiment-Based Filtering**: Implement sentiment-based filtering for recommending animes based on users' emotions.
